@@ -185,10 +185,14 @@ var Property = {
 		return result;
 	}
 	
-	parse = function(string){
-		var match, value, radix;
+	parse = function(value){
+		var match, radix;
 		
-		if(match = rnum.exec(string)){
+		if(typeof value == 'number'){
+			return parseInt(value);
+		}
+		
+		if(match = rnum.exec(value)){
 			value = match[0];
 			radix = match[1] ? 10 : match[2] ? 8 : 16;
 			return parseInt(value, radix);
