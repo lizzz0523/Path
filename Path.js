@@ -389,6 +389,9 @@ Path.prototype = {
 		this.curPos = points.end;
 	},
 	
+	stay : function(duration){
+	},
+	
 	update : function(step){
 		var pos;
 	
