@@ -168,11 +168,12 @@ var Property = {
 	
 	Default = {x:0, y:0, z:0},
 	
-	rnum = /([1-9]+[0-9]*)|(0[1-7]+[0-7]*)|(0x[1-9a-f]+[0-9a-f]*)/i,
+	rnum = /([1-9]+[0-9]*)|(0[1-7]+[0-7]*)|((#|0x)[1-9a-f]+[0-9a-f]*)/i,
+	
+	coordinate = 'xyz'.split(''),
 	
 	arr2obj = function(array){
 		var result = {},
-			coordinate = 'xyz'.split(''),
 			axis,
 			i = 0,
 			len = coordinate.length;
@@ -230,7 +231,6 @@ var Property = {
 	drawLine = function(points, t){
 		var begin, end,
 			result = {},
-			coordinate = 'xyz'.split(''),
 			axis,
 			i = 0,
 			len = coordinate.length;
@@ -253,7 +253,6 @@ var Property = {
 			b = {},
 			c = {},
 			result = {},
-			coordinate = 'xyz'.split(''),
 			axis,
 			i = 0,
 			len = coordinate.length;
