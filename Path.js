@@ -323,7 +323,7 @@ function Path(element, offset, type){
 	this.curPos = map(Default);
 	this.offset = map(Default, offset || {}, parse);
 	
-	this.setPosition = Property[type] || Property['margin'];
+	this.setPosition = Property[type] && typeof Property[type] == 'function' ? Property[type] : Property['margin'];
 }
 
 Path.prototype = {
@@ -407,7 +407,7 @@ Path.prototype = {
 		this.setPosition(this.elem, this.style, {
 			x : pos.x + this.offset.x,
 			y : pos.y + this.offset.y,
-			z : pos.y + this.offset.z
+			z : pos.z + this.offset.z
 		});
 	}
 };
