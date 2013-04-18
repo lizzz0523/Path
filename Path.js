@@ -214,6 +214,7 @@ var Property = {
 			target = arr2obj(target);
 		}
 		
+		//copy default value
 		for(name in def){
 			result[name] = def[name];
 		}
@@ -289,6 +290,7 @@ var Property = {
 		points.begin = map(Default, begin, parse);
 		points.end = map(Default, end, parse);
 		
+		//config control point
 		if(i < len){
 			for(;i < len; i++){
 				points['cp' + (i - 1)] = map(Default, arguments[i], parse);
@@ -303,7 +305,7 @@ function Path(element, offset, type){
 		element = document.getElementById(element);
 	}
 	
-	if(!element.nodeType || element.nodeType != 1){
+	if(!(element && element.nodeType && element.nodeType == 1)){
 		throw 'Not Find Element!';
 		return;
 	}
@@ -328,7 +330,7 @@ function Path(element, offset, type){
 
 Path.prototype = {
 	beginPath : function(pos, begin){
-		this.beginStep = this.curStep =  begin || 0;
+		this.beginStep = this.curStep = begin ? Math.floor(begin) : 0;
 		
 		this.beginPos = map(Default, pos, parse);
 		this.curPos = map(Default, pos, parse);
@@ -346,13 +348,15 @@ Path.prototype = {
 	lineTo : function(pos, duration, easing){
 		var begin, end, points, percent, temp, tempPos;
 		
+		duration = Math.floor(duration);
+		
 		begin = this.curStep;
 		end = begin + duration;
 		points = configDrawPoint(this.curPos, pos);
 		
 		easing = Easing[easing] || Easing['linear'];
 		
-		for(var step = begin; step <= end; step++){
+		for(var step = begin; step < end; step++){
 			temp = step - begin;
 			percent = temp / duration;
 			
@@ -369,13 +373,15 @@ Path.prototype = {
 	curveTo : function(pos, cp1, cp2, duration, easing){
 		var begin, end, points, percent, temp, tempPos;
 		
+		duration = Math.floor(duration);
+		
 		begin = this.curStep;
 		end = begin + duration;
 		points = configDrawPoint(this.curPos, pos, cp1, cp2);
 		
 		easing = Easing[easing] || Easing['linear'];
 		
-		for(var step = begin; step <= end; step++){
+		for(var step = begin; step < end; step++){
 			temp = step - begin;
 			percent = temp / duration;
 			
@@ -390,6 +396,36 @@ Path.prototype = {
 	},
 	
 	stay : function(duration){
+		var begin, end, tempPos;
+		
+		duration = Math.floor(duration);
+		
+		begin = this.curStep;
+		end = begin + duration;
+		
+		tempPos = map(Default, this.curPos);
+		tempPos.begin = begin;
+		tempPos.end = end;
+		
+		this.cache['stay'] || (this.cache['stay'] = []);
+		this.cache['stay'].push(tempPos);
+		
+		this.curStep = end;
+	},
+	
+	getStay : function(step){
+		var	stay, pos,
+			i = 0, len;
+			
+		if(!(stay = this.cache['stay'])) return
+		len = stay.length;
+		
+		for(; i < len; i++){
+			pos = stay[i];
+			if(step >= pos.begin && step < pos.end){
+				return pos;
+			}
+		}
 	},
 	
 	update : function(step){
@@ -403,6 +439,17 @@ Path.prototype = {
 		}
 		
 		pos = this.cache[step];
+		if(!pos){
+			if(step == this.curStep){
+				pos = this.curPos;
+			}else{
+				pos = this.getStay(step);
+			}
+		}
+		
+		if(!pos){
+			throw 'Not Find Pos';
+		}
 	
 		this.setPosition(this.elem, this.style, {
 			x : pos.x + this.offset.x,
