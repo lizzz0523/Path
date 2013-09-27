@@ -5,7 +5,7 @@ var Property = {
 			style.left = pos.x + 'px';
 			style.top = pos.y + 'px';
 		},
-		margin : function(style, style, pos){
+		margin : function(elem, style, pos){
 			style.marginLeft = pos.x + 'px';
 			style.marginTop = pos.y + 'px';
 		}
